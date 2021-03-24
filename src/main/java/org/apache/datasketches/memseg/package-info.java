@@ -18,11 +18,6 @@
  */
 
 /**
- * Preliminary module
  * @author lrhodes
- *
  */
-module org.apache.datasketches.memseg {
-  requires jdk.incubator.foreign;
-  exports org.apache.datasketches.memseg;
-}
+package org.apache.datasketches.memseg;

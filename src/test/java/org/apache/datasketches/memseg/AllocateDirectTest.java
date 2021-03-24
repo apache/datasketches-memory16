@@ -17,11 +17,14 @@
  * under the License.
  */
 
-package org.apache.datasketches.memory;
+package org.apache.datasketches.memseg;
+
+import static org.testng.Assert.assertEquals;
+
+import org.testng.annotations.Test;
 
 import jdk.incubator.foreign.MemorySegment;
-import org.testng.annotations.Test;
-//import static org.testng.Assert.assertEquals;
+
 
 
 /**
@@ -32,20 +35,21 @@ import org.testng.annotations.Test;
  */
 public class AllocateDirectTest {
 
-  /**
-   * check AllocDirect.
-   */
   @Test
   @SuppressWarnings("resource")
   public void checkAllocDirect() {
     final long bytesIn = 64;
-    AllocateDirect allocateDirect = new AllocateDirect(bytesIn);
-    final MemorySegment seg = allocateDirect.getMemorySegment();
-    final long bytesOut = seg.byteSize();
-    String out = (bytesOut == bytesIn) ? "OK" : "Not OK";
-    System.out.println(out);
-    allocateDirect.close();
+    try (AllocateDirect allocateDirect = new AllocateDirect(bytesIn)) {
+      final MemorySegment seg = allocateDirect.getMemorySegment();
+      final long bytesOut = seg.byteSize();
+      assertEquals(bytesOut, bytesIn);
+      String str = (bytesOut == bytesIn) ? "OK" : "Not OK";
+      println(str);
+      //allocateDirect.close(); //fast close
+    }
   }
 
+  
+  static void println(Object o) { System.out.println(o.toString()); }
 }
 

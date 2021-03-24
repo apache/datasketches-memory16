@@ -17,7 +17,7 @@
  * under the License.
  */
 
-package org.apache.datasketches.memory;
+package org.apache.datasketches.memseg;
 
 //import jdk.incubator.foreign.MemoryAddress;
 import jdk.incubator.foreign.MemorySegment;
@@ -28,15 +28,19 @@ import jdk.incubator.foreign.MemorySegment;
  *
  * @author Lee Rhodes
  */
-class AllocateDirect {
+final class AllocateDirect implements AutoCloseable {
   private final MemorySegment directSeg;
 
   /**
-   * Construct Memory Segment
-   * @param capacityBytes blah
+   * Base Constructor for allocate native memory.
+   *
+   * <p>Allocates and provides access to capacityBytes directly in native (off-heap) memory
+   * leveraging the Memory interface.
+   * The allocated memory will be 8-byte aligned, but may not be page aligned.
+   * @param capacityBytes the the requested capacity of off-heap memory. Cannot be zero.
    */
   AllocateDirect(final long capacityBytes) {
-    directSeg = MemorySegment.allocateNative(capacityBytes);
+    directSeg = MemorySegment.allocateNative(capacityBytes, 8);
   }
 
   MemorySegment getMemorySegment() {
@@ -47,23 +51,12 @@ class AllocateDirect {
     return directSeg.address().toRawLongValue();
   }
 
-  void close() {
+  @Override
+  public void close() {
     directSeg.close();
   }
+  
+  
 
-  @SuppressWarnings("resource")
-  public static void checkAllocDirect() {
-    final long bytesIn = 64;
-    AllocateDirect allocateDirect = new AllocateDirect(bytesIn);
-    final MemorySegment seg = allocateDirect.getMemorySegment();
-    final long bytesOut = seg.byteSize();
-    String out = (bytesOut == bytesIn) ? "OK" : "Not OK";
-    System.out.println(out);
-    allocateDirect.close();
-  }
-
-  public static void main(final String[] args) {
-    checkAllocDirect();
-  }
 }
 
