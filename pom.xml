@@ -82,8 +82,10 @@ under the License.
   </developers>
 
   <properties>
-
     <!-- Test -->
+    <protobuf-java.version>3.6.0</protobuf-java.version>
+    <!-- Used for UTF8 testing -->
+    <zero-allocation-hashing.version>0.8</zero-allocation-hashing.version>
     <testng.version>7.4.0</testng.version>
 
     <!-- System-wide properties -->
@@ -155,6 +157,20 @@ under the License.
 
     <!-- Test Scope -->
     <dependency>
+      <!-- Used for UTF8 testing -->
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobuf-java.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <!-- Used for xxHash testing -->
+      <groupId>net.openhft</groupId>
+      <artifactId>zero-allocation-hashing</artifactId>
+      <version>${zero-allocation-hashing.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
       <groupId>org.testng</groupId>
       <artifactId>testng</artifactId>
       <version>${testng.version}</version>
@@ -217,6 +233,10 @@ under the License.
           <version>${maven-javadoc-plugin.version}</version>
           <configuration>
             <docfilessubdirs>true</docfilessubdirs>
+            <additionalJOptions>
+              <additionalJOption>--add-exports=java.base/sun.nio.ch=ALL-UNNAMED</additionalJOption>
+              <additionalJOption>--add-exports=java.base/jdk.internal.ref=ALL-UNNAMED</additionalJOption>
+            </additionalJOptions>
           </configuration>
           <executions>
             <execution>
@@ -320,19 +340,23 @@ under the License.
             <trimStackTrace>false</trimStackTrace>
             <useManifestOnlyJar>false</useManifestOnlyJar>
             <redirectTestOutputToFile>true</redirectTestOutputToFile>
-<!--        <argLine>
-              - -add-modules jdk.incubator.foreign
-            </argLine> -->
+            <argLine>
+              --add-opens java.base/java.nio=ALL-UNNAMED
+              --add-opens java.base/java.lang=ALL-UNNAMED
+              --add-opens java.base/jdk.internal.misc=ALL-UNNAMED
+              --add-opens java.base/jdk.internal.ref=ALL-UNNAMED
+              --add-opens java.base/sun.nio.ch=ALL-UNNAMED
+            </argLine>
           </configuration>
         </plugin>
-
+        <!--
         <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-toolchains-plugin</artifactId>
           <version>${maven-toolchains-plugin.version}</version>
           <configuration>
             <toolchains>
-              <jdk><version>8</version></jdk>
+              <jdk><version>${java.version}</version></jdk>
             </toolchains>
           </configuration>
           <executions>
@@ -341,7 +365,7 @@ under the License.
             </execution>
           </executions>
         </plugin>
-
+        -->
         <plugin>
           <!-- Generates code coverage report from website. -->
           <groupId>org.jacoco</groupId>
@@ -371,22 +395,25 @@ under the License.
         </plugin>
 
         <plugin>
-          <groupId>pl.project13.maven</groupId>
-          <artifactId>git-commit-id-plugin</artifactId>
-          <version>${git-commit-id-plugin.version}</version>
-        </plugin>
-
-        <plugin>
           <groupId>org.apache.maven.plugins</groupId>
           <artifactId>maven-compiler-plugin</artifactId>
           <version>${maven-compiler-plugin.version}</version>
           <configuration>
             <source>${maven.compiler.source}</source>
             <target>${maven.compiler.target}</target>
-<!--        <compilerArgs>
-              <arg>- -add-modules jdk.incubator.foreign</arg>
-            </compilerArgs> -->
+            <compilerArgs>
+              <arg>--add-exports</arg>
+              <arg>java.base/sun.nio.ch=ALL-UNNAMED</arg>
+              <arg>--add-exports</arg>
+              <arg>java.base/jdk.internal.ref=ALL-UNNAMED</arg>
+            </compilerArgs>
           </configuration>
+        </plugin>
+
+        <plugin>
+          <groupId>pl.project13.maven</groupId>
+          <artifactId>git-commit-id-plugin</artifactId>
+          <version>${git-commit-id-plugin.version}</version>
         </plugin>
 
       </plugins>
