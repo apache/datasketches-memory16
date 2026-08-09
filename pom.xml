@@ -83,7 +83,7 @@ under the License.
 
   <properties>
     <!-- Test -->
-    <protobuf-java.version>3.6.0</protobuf-java.version>
+    <protobuf-java.version>3.16.3</protobuf-java.version>
     <!-- Used for UTF8 testing -->
     <zero-allocation-hashing.version>0.8</zero-allocation-hashing.version>
     <testng.version>7.4.0</testng.version>
